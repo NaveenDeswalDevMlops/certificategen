@@ -1,28 +1,32 @@
 :root {
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   color: #1e293b;
 }
 
 body {
   margin: 0;
-  background: #f3f7ff;
+  background: radial-gradient(circle at top, #e0ecff 0%, #f8fafc 48%, #f1f5f9 100%);
 }
 
 .container {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 20px;
+  max-width: 940px;
+  margin: 28px auto;
+  padding: 28px;
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  border: 1px solid #dbe4f2;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.1);
 }
 
 h1 {
   margin-top: 0;
+  margin-bottom: 8px;
+  color: #0f172a;
 }
 
 .subtitle {
   color: #475569;
+  margin-bottom: 20px;
 }
 
 form {
@@ -30,10 +34,16 @@ form {
   gap: 14px;
 }
 
+label {
+  font-weight: 600;
+  color: #1f2937;
+}
+
 input {
-  padding: 10px;
+  padding: 11px;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 14px;
 }
 
 .camera-actions {
@@ -42,12 +52,13 @@ input {
 }
 
 button {
-  padding: 10px 14px;
+  padding: 11px 15px;
   border: none;
-  border-radius: 6px;
-  background: #1d4ed8;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1d4ed8, #0f766e);
   color: white;
   cursor: pointer;
+  font-weight: 600;
 }
 
 button:disabled {
@@ -67,19 +78,19 @@ video,
   width: 100%;
   min-height: 240px;
   border: 1px solid #cbd5e1;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #f8fafc;
 }
 
 .preview-box {
-  padding: 8px;
+  padding: 10px;
 }
 
 #examImagePreview {
   width: 100%;
   height: 240px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 6px;
   background: #e2e8f0;
 }
 
