@@ -202,43 +202,43 @@ function drawCertificateLayout(doc, details) {
     );
 
   if (SIGNATURE_IMAGE_BUFFER) {
-    doc.image(SIGNATURE_IMAGE_BUFFER, 500, 410, { fit: [160, 58], align: 'left' });
+    doc.image(SIGNATURE_IMAGE_BUFFER, 528, 390, { fit: [218, 70], align: 'left' });
   } else {
-    drawHumanSignature(doc, 506, 432);
+    drawHumanSignature(doc, 540, 408);
   }
 
-  doc.moveTo(500, 464).lineTo(660, 464).lineWidth(1).strokeColor('#111').stroke();
+  doc.moveTo(532, 436).lineTo(745, 436).lineWidth(1).strokeColor('#111').stroke();
   doc
     .fontSize(12)
     .fillColor('#111')
     .font('Helvetica-Bold')
-    .text(AUTHORIZED_SIGNATORY, 500, 470, { width: 160 })
+    .text(AUTHORIZED_SIGNATORY, 532, 442)
     .font('Helvetica')
     .fontSize(10)
-    .text(SIGNATORY_TITLE, 500, 486, { width: 160 })
-    .fontSize(9)
-    .text(`Authorized Signatory • ${trainingPartner}`, 500, 499, { width: 165 });
+    .text(SIGNATORY_TITLE, 532, 458)
+    .fontSize(10)
+    .text(`Authorized Signatory • ${trainingPartner}`, 532, 472);
 
   doc
     .font('Helvetica-Bold')
     .fontSize(13)
     .fillColor('#111827')
-    .text('Issued By', 685, 333, { width: 96, align: 'center' })
+    .text('Issued By', 670, 430, { width: 110, align: 'center' })
     .font('Helvetica')
-    .fontSize(11)
-    .text(trainingPartner, 685, 351, { width: 96, align: 'center' });
+    .fontSize(12)
+    .text(trainingPartner, 670, 448, { width: 110, align: 'center' });
 
   const qrBuffer = Buffer.from(qrDataURL.replace(/^data:image\/png;base64,/, ''), 'base64');
-  doc.image(qrBuffer, 700, 381, { fit: [78, 78] });
+  doc.image(qrBuffer, 706, 472, { fit: [72, 72] });
   doc
     .fontSize(9)
     .fillColor('#475569')
-    .text('Scan to verify', 696, 461, { width: 86, align: 'center' })
-    .fontSize(8.5)
+    .text('Scan to verify', 700, 548, { width: 84, align: 'center' })
+    .fontSize(8)
     .fillColor('#1f2937')
     // Verification fix: clearly label identifier as Certificate ID.
-    .text(`Certificate ID: ${certificateId}`, 585, 479, {
-      width: 195,
+    .text(`Certificate ID: ${certificateId}`, 590, 560, {
+      width: 180,
       align: 'right',
       lineBreak: false,
     });
@@ -248,7 +248,7 @@ function drawCertificateLayout(doc, details) {
     .fontSize(9)
     .fillColor('#334155')
     .font('Helvetica')
-    .text(`Issued by ${TRAINING_PARTNER}`, margin, 552, {
+    .text(`Issued by ${TRAINING_PARTNER}`, margin, 576, {
       width: pageWidth - margin * 2,
       align: 'center',
     });
