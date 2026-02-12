@@ -7,7 +7,9 @@ const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const TRAINING_PARTNER = 'LearningCurve';
+const TRAINING_PARTNER = 'Learning Curve';
+const AUTHORIZED_SIGNATORY = 'Jody Soeiro de Faria';
+const SIGNATORY_TITLE = 'AVP, Curriculum & User Success';
 
 // Multer stores uploaded image in memory so we can embed directly in the generated PDF.
 const upload = multer({ storage: multer.memoryStorage() });
@@ -20,93 +22,155 @@ app.use(express.static('frontend'));
 // For production you would replace this with a database.
 const certificateStore = new Map();
 
+function formatDate(date) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: '2-digit',
+    year: 'numeric',
+  }).format(date);
+}
+
+function buildRandomSignaturePath(seed) {
+  const baseY = 462;
+  const points = [];
+
+  for (let i = 0; i < 7; i += 1) {
+    points.push({
+      x: 510 + i * 20,
+      y: baseY + Math.sin(seed + i * 1.4) * 12 + (i % 2 ? -4 : 4),
+    });
+  }
+
+  return points;
+}
+
+function drawLearningCurveLogo(doc, x, y) {
+  doc.save();
+  doc.translate(x, y);
+
+  doc.rect(0, 0, 32, 24).lineWidth(1.2).stroke('#e11d48');
+  doc
+    .moveTo(4, 17)
+    .lineTo(12, 11)
+    .lineTo(20, 15)
+    .lineTo(28, 7)
+    .stroke('#e11d48');
+
+  doc
+    .fillColor('#111')
+    .fontSize(30)
+    .font('Helvetica-Bold')
+    .text('learning curve', 44, -4);
+
+  doc
+    .fillColor('#374151')
+    .fontSize(17)
+    .font('Helvetica')
+    .text('Certified', 48, 30);
+
+  doc.restore();
+}
+
 function drawCertificateLayout(doc, details) {
   const {
     learnerName,
     certificateId,
-    completionDate,
+    issueDate,
+    expiryDate,
     trainingPartner,
-    photoBuffer,
+    examImageBuffer,
     qrDataURL,
   } = details;
 
   const pageWidth = doc.page.width;
-  const margin = 50;
+  const margin = 45;
 
-  // Border
-  doc.rect(25, 25, doc.page.width - 50, doc.page.height - 50).lineWidth(2).stroke('#1f3b73');
+  doc.rect(25, 25, doc.page.width - 50, doc.page.height - 50).lineWidth(2).stroke('#0f172a');
 
-  doc
-    .fillColor('#1f3b73')
-    .fontSize(32)
-    .font('Helvetica-Bold')
-    .text('Certificate of Completion', margin, 70, { align: 'center' });
+  drawLearningCurveLogo(doc, 75, 45);
 
   doc
-    .moveDown(1)
-    .fillColor('#333')
-    .fontSize(14)
+    .fillColor('#1f2937')
+    .fontSize(24)
     .font('Helvetica')
-    .text('This certifies that', margin, 150, { align: 'center' });
+    .text(learnerName, margin, 120, { align: 'center' });
 
   doc
-    .fillColor('#111')
-    .fontSize(34)
-    .font('Helvetica-Bold')
-    .text(learnerName, margin, 180, { align: 'center' });
-
-  doc
-    .fillColor('#333')
-    .fontSize(14)
+    .fillColor('#1f2937')
+    .fontSize(15)
     .font('Helvetica')
     .text(
-      `has completed the training and passed the exam provided by ${trainingPartner}.`,
+      'has successfully passed the requirements to obtain the following Learning Curve Certification:',
       margin,
-      240,
+      168,
       { align: 'center', width: pageWidth - margin * 2 }
     );
 
-  // Passport-style photo block
+  doc.rect(25, 240, pageWidth - 50, 74).fill('#67a4d9');
   doc
-    .fontSize(11)
-    .fillColor('#111')
-    .text('Passport Photo', margin + 35, 300, { width: 120, align: 'center' })
-    .rect(margin, 320, 130, 160)
-    .lineWidth(1)
-    .stroke('#888');
+    .fillColor('#fff')
+    .font('Helvetica-Bold')
+    .fontSize(33)
+    .text('Learning Curve Certified Exam Passed', margin, 260, { align: 'center' });
 
-  if (photoBuffer) {
-    doc.image(photoBuffer, margin + 5, 325, {
-      fit: [120, 150],
+  doc
+    .fillColor('#111')
+    .fontSize(17)
+    .font('Helvetica-Bold')
+    .text('Date of Issue:', 75, 365)
+    .font('Helvetica')
+    .text(issueDate, 75, 390)
+    .font('Helvetica-Bold')
+    .text('Date of Expiry:', 75, 430)
+    .font('Helvetica')
+    .text(expiryDate, 75, 455);
+
+  doc
+    .fontSize(12)
+    .fillColor('#111')
+    .font('Helvetica-Bold')
+    .text('Exam Image', 325, 355, { width: 130, align: 'center' })
+    .rect(320, 375, 140, 140)
+    .lineWidth(1)
+    .stroke('#64748b');
+
+  if (examImageBuffer) {
+    doc.image(examImageBuffer, 325, 380, {
+      fit: [130, 130],
       align: 'center',
       valign: 'center',
     });
   }
 
-  // Certificate metadata
+  const signatureSeed = Math.random() * 10;
+  const signaturePoints = buildRandomSignaturePath(signatureSeed);
+
+  doc.save();
+  doc.lineWidth(2).strokeColor('#334155').moveTo(500, 470);
+  signaturePoints.forEach((point) => {
+    doc.lineTo(point.x, point.y);
+  });
+  doc.stroke();
+  doc.restore();
+
+  doc.moveTo(500, 496).lineTo(735, 496).lineWidth(1).strokeColor('#111').stroke();
   doc
-    .fontSize(13)
+    .fontSize(12)
     .fillColor('#111')
-    .font('Helvetica-Bold')
-    .text(`Certificate ID: ${certificateId}`, 220, 330)
     .font('Helvetica')
-    .text(`Training Partner: ${trainingPartner}`, 220, 360)
-    .text(`Date of Completion: ${completionDate}`, 220, 390);
-
-  // Add QR code for verification endpoint.
-  const qrBuffer = Buffer.from(qrDataURL.replace(/^data:image\/png;base64,/, ''), 'base64');
-  doc.image(qrBuffer, pageWidth - 180, 430, { fit: [120, 120] });
-  doc
+    .text(AUTHORIZED_SIGNATORY, 500, 502)
     .fontSize(10)
-    .fillColor('#444')
-    .text('Scan to verify', pageWidth - 190, 555, { width: 140, align: 'center' });
+    .text(SIGNATORY_TITLE, 500, 518)
+    .fontSize(10)
+    .text(`Authorized Signatory • ${trainingPartner}`, 500, 532)
+    .text(`Certificate ID: ${certificateId}`, 500, 546);
 
-  // Signature placeholder
-  doc.moveTo(220, 520).lineTo(420, 520).strokeColor('#444').stroke();
+  const qrBuffer = Buffer.from(qrDataURL.replace(/^data:image\/png;base64,/, ''), 'base64');
+  doc.image(qrBuffer, 680, 365, { fit: [80, 80] });
   doc
-    .fontSize(11)
-    .fillColor('#444')
-    .text('Authorized Signature', 260, 525);
+    .fontSize(9)
+    .fillColor('#475569')
+    .text('Scan to verify', 675, 448, { width: 94, align: 'center' });
 }
 
 app.post('/api/certificates', upload.single('photo'), async (req, res) => {
@@ -118,11 +182,16 @@ app.post('/api/certificates', upload.single('photo'), async (req, res) => {
     }
 
     if (!req.file) {
-      return res.status(400).json({ error: 'Passport-style photo is required.' });
+      return res.status(400).json({ error: 'Exam image is required.' });
     }
 
     const certificateId = uuidv4();
-    const completionDate = new Date().toLocaleDateString();
+    const issueDateObject = new Date();
+    const expiryDateObject = new Date(issueDateObject);
+    expiryDateObject.setFullYear(expiryDateObject.getFullYear() + 2);
+
+    const issueDate = formatDate(issueDateObject);
+    const expiryDate = formatDate(expiryDateObject);
     const verificationUrl = `${req.protocol}://${req.get('host')}/api/verify/${certificateId}`;
     const qrDataURL = await QRCode.toDataURL(verificationUrl);
 
@@ -130,7 +199,8 @@ app.post('/api/certificates', upload.single('photo'), async (req, res) => {
     certificateStore.set(certificateId, {
       certificateId,
       learnerName,
-      completionDate,
+      issueDate,
+      expiryDate,
       trainingPartner: TRAINING_PARTNER,
       createdAt: new Date().toISOString(),
       verificationUrl,
@@ -154,9 +224,10 @@ app.post('/api/certificates', upload.single('photo'), async (req, res) => {
     drawCertificateLayout(doc, {
       learnerName,
       certificateId,
-      completionDate,
+      issueDate,
+      expiryDate,
       trainingPartner: TRAINING_PARTNER,
-      photoBuffer: req.file.buffer,
+      examImageBuffer: req.file.buffer,
       qrDataURL,
     });
 
