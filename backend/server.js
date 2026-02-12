@@ -205,37 +205,37 @@ function drawCertificateLayout(doc, details) {
     drawHumanSignature(doc, 540, 408);
   }
 
-  doc.moveTo(532, 436).lineTo(745, 436).lineWidth(1).strokeColor('#111').stroke();
+  doc.moveTo(532, 462).lineTo(745, 462).lineWidth(1).strokeColor('#111').stroke();
   doc
     .fontSize(12)
     .fillColor('#111')
     .font('Helvetica-Bold')
-    .text(AUTHORIZED_SIGNATORY, 532, 442)
+    .text(AUTHORIZED_SIGNATORY, 532, 468)
     .font('Helvetica')
     .fontSize(10)
-    .text(SIGNATORY_TITLE, 532, 458)
+    .text(SIGNATORY_TITLE, 532, 484)
     .fontSize(10)
-    .text(`Authorized Signatory • ${trainingPartner}`, 532, 472);
+    .text(`Authorized Signatory • ${trainingPartner}`, 532, 498);
 
   doc
     .font('Helvetica-Bold')
     .fontSize(13)
     .fillColor('#111827')
-    .text('Issued By', 670, 430, { width: 110, align: 'center' })
+    .text('Issued By', 532, 520, { width: 110, align: 'center' })
     .font('Helvetica')
     .fontSize(12)
-    .text(trainingPartner, 670, 448, { width: 110, align: 'center' });
+    .text(trainingPartner, 532, 536, { width: 110, align: 'center' });
 
   const qrBuffer = Buffer.from(qrDataURL.replace(/^data:image\/png;base64,/, ''), 'base64');
-  doc.image(qrBuffer, 706, 472, { fit: [72, 72] });
+  doc.image(qrBuffer, 706, 540, { fit: [72, 72] });
   doc
     .fontSize(9)
     .fillColor('#475569')
-    .text('Scan to verify', 700, 548, { width: 84, align: 'center' })
+    .text('Scan to verify', 700, 618, { width: 84, align: 'center' })
     .fontSize(8)
     .fillColor('#1f2937')
     // Verification fix: clearly label identifier as Certificate ID.
-    .text(`Certificate ID: ${certificateId}`, 590, 560, {
+    .text(`Certificate ID: ${certificateId}`, 590, 634, {
       width: 180,
       align: 'right',
       lineBreak: false,
