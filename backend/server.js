@@ -1,6 +1,8 @@
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 const PDFDocument = require('pdfkit');
 const QRCode = require('qrcode');
 const { v4: uuidv4 } = require('uuid');
@@ -8,8 +10,12 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const TRAINING_PARTNER = 'LearningCurve Institute';
-const AUTHORIZED_SIGNATORY = 'Maya Rivera';
+const AUTHORIZED_SIGNATORY = 'Peter Smith';
 const SIGNATORY_TITLE = 'Director of Certification Excellence';
+const SIGNATURE_IMAGE_PATH = path.join(__dirname, 'assets', 'signature.png');
+const SIGNATURE_IMAGE_BUFFER = fs.existsSync(SIGNATURE_IMAGE_PATH)
+  ? fs.readFileSync(SIGNATURE_IMAGE_PATH)
+  : null;
 
 // Multer stores uploaded image in memory so we can embed directly in the generated PDF.
 const upload = multer({ storage: multer.memoryStorage() });
@@ -185,7 +191,11 @@ function drawCertificateLayout(doc, details) {
     .fontSize(12)
     .text(trainingPartner, 310, 495);
 
-  drawHumanSignature(doc, 540, 470);
+  if (SIGNATURE_IMAGE_BUFFER) {
+    doc.image(SIGNATURE_IMAGE_BUFFER, 528, 452, { fit: [218, 70], align: 'left' });
+  } else {
+    drawHumanSignature(doc, 540, 470);
+  }
 
   doc.moveTo(532, 498).lineTo(745, 498).lineWidth(1).strokeColor('#111').stroke();
   doc
@@ -197,15 +207,21 @@ function drawCertificateLayout(doc, details) {
     .fontSize(10)
     .text(SIGNATORY_TITLE, 532, 520)
     .fontSize(10)
-    .text(`Authorized Signatory • ${trainingPartner}`, 532, 534)
-    .text(`Certificate ID: ${certificateId}`, 532, 548);
+    .text(`Authorized Signatory • ${trainingPartner}`, 532, 534);
 
   const qrBuffer = Buffer.from(qrDataURL.replace(/^data:image\/png;base64,/, ''), 'base64');
-  doc.image(qrBuffer, 692, 360, { fit: [72, 72] });
+  doc.image(qrBuffer, 706, 54, { fit: [72, 72] });
   doc
     .fontSize(9)
     .fillColor('#475569')
-    .text('Scan to verify', 686, 437, { width: 84, align: 'center' });
+    .text('Scan to verify', 700, 130, { width: 84, align: 'center' })
+    .fontSize(8)
+    .fillColor('#1f2937')
+    .text(`ID: ${certificateId}`, 615, 145, {
+      width: 180,
+      align: 'right',
+      lineBreak: false,
+    });
 }
 
 app.post('/api/certificates', upload.single('photo'), async (req, res) => {
