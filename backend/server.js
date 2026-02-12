@@ -221,24 +221,24 @@ function drawCertificateLayout(doc, details) {
     .font('Helvetica-Bold')
     .fontSize(13)
     .fillColor('#111827')
-    .text('Issued By', 670, 430, { width: 110, align: 'center' })
+    .text('Issued By', 310, 480, { width: 150, align: 'left' })
     .font('Helvetica')
     .fontSize(12)
-    .text(trainingPartner, 670, 448, { width: 110, align: 'center' });
+    .text(trainingPartner, 310, 500, { width: 110, align: 'left' });
 
   const qrBuffer = Buffer.from(qrDataURL.replace(/^data:image\/png;base64,/, ''), 'base64');
-  doc.image(qrBuffer, 706, 472, { fit: [72, 72] });
+  doc.image(qrBuffer, 706, 31, { fit: [72, 72] });
   doc
     .fontSize(9)
     .fillColor('#475569')
-    .text('Scan to verify', 700, 548, { width: 84, align: 'center' })
+    .text('Scan to verify', 700, 100, { width: 84, align: 'center' })
     .fontSize(8)
     .fillColor('#1f2937')
     // Verification fix: clearly label identifier as Certificate ID.
-    .text(`Certificate ID: ${certificateId}`, 590, 560, {
-      width: 180,
-      align: 'right',
-      lineBreak: false,
+    .text(`Certificate ID: ${certificateId}`, 533, 500, {
+      width: 300,
+      align: 'left',
+      lineBreak: true,
     });
 
   // Issuer consistency fix: include issuing authority in footer for governance traceability.
