@@ -1,4 +1,4 @@
-# Its Fake Credential Generator
+# LearningCurve Certificate Generator
 
 A complete full-stack web app that lets a user:
 - Enter their full name.
@@ -37,11 +37,11 @@ certificategen/
    - Validates input.
    - Generates unique certificate ID.
    - Creates PDF with:
-     - **Title:** Professional Credential Certificate
+     - **Title:** Certificate of Completion
      - Large centered learner name
      - Embedded passport-style photo
      - Unique certificate ID
-     - Completion statement mentioning **Its Fake** and assessment status
+     - Completion statement mentioning **LearningCurve**
      - Date of completion
      - Signature placeholder
      - QR code linking to verification endpoint
@@ -63,7 +63,7 @@ npm start
 ### 3) Open in browser
 Visit:
 - Main app: `http://localhost:3000`
-- Verify endpoint format: `http://localhost:3000/verify/<certificate-id>`
+- Verify endpoint format: `http://localhost:3000/api/verify/<certificate-id>`
 
 ## API Endpoints
 
@@ -76,11 +76,8 @@ Returns:
 - `application/pdf` (downloadable certificate)
 - Header: `X-Certificate-Id` containing generated ID
 
-### `GET /verify/:id`
-Returns a verification page for public QR checks.
-
 ### `GET /api/verify/:id`
-Returns JSON for API consumers:
+Returns JSON:
 - `valid: true/false`
 - Certificate details if found
 
@@ -88,22 +85,3 @@ Returns JSON for API consumers:
 - Certificate records are stored **in memory** for simplicity.
 - Restarting server clears verification history.
 - For production, replace in-memory store with a database.
-
-### Troubleshooting
-If you run `npm start` or `npm run dev` and see `Cannot find module ...` (for example `express`), dependencies are not installed yet.
-
-Run:
-```bash
-npm install
-```
-
-Then start again:
-```bash
-npm run dev
-```
-
-
-## Security and Trust Notes
-- Certificate IDs are generated **only on the backend** and include an HMAC-based signature component for tamper resistance.
-- Official credential PDFs are generated server-side only; the client does not build official certificates.
-- Certificate metadata is stored on the backend for verification endpoints.
