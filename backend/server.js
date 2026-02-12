@@ -10,8 +10,7 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const TRAINING_PARTNER = 'LearningCurve Institute';
-// Authenticity fix: use one canonical credential title across all certificates.
-const PROFESSIONAL_CREDENTIAL_NAME = 'LearningCurve Certified Generative AI Solution Architect';
+const CERTIFICATION_PREFIX = 'LearningCurve Certified';
 const AUTHORIZED_SIGNATORY = 'Peter Smith';
 const SIGNATORY_TITLE = 'Director of Certification Excellence';
 const SIGNATURE_IMAGE_PATH = path.join(__dirname, 'assets', 'signature.png');
@@ -91,6 +90,7 @@ function drawLearningCurveLogo(doc, x, y) {
 function drawCertificateLayout(doc, details) {
   const {
     learnerName,
+    certificateName,
     certificateId,
     issueDate,
     expiryDate,
@@ -124,8 +124,7 @@ function drawCertificateLayout(doc, details) {
     .fillColor('#0f172a')
     .fontSize(24)
     .font('Helvetica-Bold')
-    // Credential language fix: use an explicit professional certification title.
-    .text(PROFESSIONAL_CREDENTIAL_NAME, margin, 112, { align: 'center' });
+    .text(certificateName, margin, 112, { align: 'center' });
 
   doc
     .fillColor('#334155')
@@ -155,8 +154,7 @@ function drawCertificateLayout(doc, details) {
     .fillColor('#f8fafc')
     .font('Helvetica-Bold')
     .fontSize(15)
-    // Professional hierarchy fix: restate credential title as the certified designation.
-    .text(PROFESSIONAL_CREDENTIAL_NAME, margin, 296, { align: 'center' });
+    .text(certificateName, margin, 296, { align: 'center' });
 
   // Left image panel
   doc
@@ -257,11 +255,15 @@ function drawCertificateLayout(doc, details) {
 app.post('/api/certificates', upload.single('photo'), async (req, res) => {
   try {
     const learnerName = (req.body.name || '').trim();
-    // Credential integrity fix: lock issuance to the governed professional credential title.
-    const certificateName = PROFESSIONAL_CREDENTIAL_NAME;
+    const requestedCertificateName = (req.body.certificateName || '').trim();
+    const certificateName = `${CERTIFICATION_PREFIX} ${requestedCertificateName}`.trim();
 
     if (!learnerName) {
       return res.status(400).json({ error: 'Learner name is required.' });
+    }
+
+    if (!requestedCertificateName) {
+      return res.status(400).json({ error: 'Certificate name is required.' });
     }
 
     if (!req.file) {
