@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearningCurve Professional Credential Generator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Certificate Generator</h1>
+      <p class="subtitle">Create an official Its Fake credential with webcam photo.</p>
+
+      <form id="certificateForm">
+        <label for="fullName">Full Name</label>
+        <input id="fullName" name="fullName" type="text" required placeholder="Enter learner full name" />
+
+        <label for="validUntil">Credential Valid Until (Optional)</label>
+        <input id="validUntil" name="validUntil" type="date" />
+
+        <label class="checkbox-row" for="mirrorMode">
+          <input id="mirrorMode" type="checkbox" checked />
+          Mirror camera preview
+        </label>
+
+        <div class="camera-actions">
+          <button type="button" id="openCameraBtn">Open Webcam</button>
+          <button type="button" id="captureBtn" disabled>Capture Passport Photo</button>
+        </div>
+
+        <div class="media-panel">
+          <video id="video" autoplay playsinline></video>
+          <canvas id="canvas" width="320" height="240" hidden></canvas>
+          <div class="preview-box">
+            <p>Captured Photo Preview</p>
+            <img id="photoPreview" alt="Captured passport preview" />
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn">Generate Certificate PDF</button>
+      </form>
+
+      <p id="status"></p>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

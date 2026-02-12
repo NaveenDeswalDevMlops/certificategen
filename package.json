@@ -1,0 +1,20 @@
+{
+  "name": "certificategen",
+  "version": "1.0.0",
+  "description": "Full-stack certificate generator with webcam photo capture and PDF export",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "prestart": "node scripts/check-deps.js",
+    "predev": "node scripts/check-deps.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "pdfkit": "^0.15.0",
+    "qrcode": "^1.5.3",
+    "uuid": "^9.0.1"
+  }
+}
