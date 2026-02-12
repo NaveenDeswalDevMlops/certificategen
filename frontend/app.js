@@ -1,5 +1,6 @@
 const form = document.getElementById('certificateForm');
 const fullNameInput = document.getElementById('fullName');
+const certificateNameInput = document.getElementById('certificateName');
 const openCameraBtn = document.getElementById('openCameraBtn');
 const captureBtn = document.getElementById('captureBtn');
 const video = document.getElementById('video');
@@ -47,6 +48,11 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
+  if (!certificateNameInput.value.trim()) {
+    setStatus('Please enter a certificate name.', true);
+    return;
+  }
+
   if (!capturedBlob) {
     setStatus('Please capture an exam image before submitting.', true);
     return;
@@ -54,6 +60,7 @@ form.addEventListener('submit', async (event) => {
 
   const payload = new FormData();
   payload.append('name', fullNameInput.value.trim());
+  payload.append('certificateName', certificateNameInput.value.trim());
   payload.append('photo', capturedBlob, 'exam-image.jpg');
 
   try {
