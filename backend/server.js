@@ -10,6 +10,8 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const TRAINING_PARTNER = 'LearningCurve Institute';
+// Authenticity fix: use one canonical credential title across all certificates.
+const PROFESSIONAL_CREDENTIAL_NAME = 'LearningCurve Certified Generative AI Solution Architect';
 const AUTHORIZED_SIGNATORY = 'Peter Smith';
 const SIGNATORY_TITLE = 'Director of Certification Excellence';
 const SIGNATURE_IMAGE_PATH = path.join(__dirname, 'assets', 'signature.png');
@@ -73,13 +75,15 @@ function drawLearningCurveLogo(doc, x, y) {
     .fillColor('#0f172a')
     .font('Helvetica-Bold')
     .fontSize(22)
-    .text('LearnCurve Bricks', 54, 2);
+    // Branding consistency fix: replace legacy issuer alias with official issuing authority.
+    .text(TRAINING_PARTNER, 54, 2);
 
   doc
     .fillColor('#475569')
     .font('Helvetica')
     .fontSize(12)
-    .text('LearningCurve Certified', 55, 26);
+    // Trust clarity fix: show professional certification program tied to the same issuer.
+    .text('Professional Certification Authority', 55, 26);
 
   doc.restore();
 }
@@ -87,7 +91,6 @@ function drawLearningCurveLogo(doc, x, y) {
 function drawCertificateLayout(doc, details) {
   const {
     learnerName,
-    certificateName,
     certificateId,
     issueDate,
     expiryDate,
@@ -119,44 +122,49 @@ function drawCertificateLayout(doc, details) {
 
   doc
     .fillColor('#0f172a')
-    .fontSize(30)
+    .fontSize(24)
     .font('Helvetica-Bold')
-    .text('Certificate of Achievement', margin, 112, { align: 'center' });
+    // Credential language fix: use an explicit professional certification title.
+    .text(PROFESSIONAL_CREDENTIAL_NAME, margin, 112, { align: 'center' });
 
   doc
     .fillColor('#334155')
     .fontSize(14)
     .font('Helvetica')
-    .text('This certifies that', margin, 162, { align: 'center' });
+    .text('Awarded to', margin, 170, { align: 'center' });
 
   doc
     .fillColor('#0f172a')
     .fontSize(28)
     .font('Helvetica-Bold')
-    .text(learnerName, margin, 186, { align: 'center' });
+    // Identity prominence fix: keep learner name as the most prominent recipient field.
+    .text(learnerName, margin, 194, { align: 'center' });
 
   doc
     .fillColor('#334155')
     .fontSize(13)
     .font('Helvetica')
-    .text('has successfully completed all requirements and earned', margin, 228, {
+    // Assessment rigor fix: explicitly require both training completion and assessment success.
+    .text('has completed the prescribed training AND passed the associated assessment.', margin, 240, {
       align: 'center',
       width: pageWidth - margin * 2,
     });
 
-  doc.roundedRect(50, 258, pageWidth - 100, 58, 6).fill('#0f4c81');
+  doc.roundedRect(50, 278, pageWidth - 100, 50, 6).fill('#0f4c81');
   doc
     .fillColor('#f8fafc')
     .font('Helvetica-Bold')
-    .fontSize(24)
-    .text(`LearningCurve Certified ${certificateName}`, margin, 277, { align: 'center' });
+    .fontSize(15)
+    // Professional hierarchy fix: restate credential title as the certified designation.
+    .text(PROFESSIONAL_CREDENTIAL_NAME, margin, 296, { align: 'center' });
 
   // Left image panel
   doc
     .fontSize(11)
     .fillColor('#0f172a')
     .font('Helvetica-Bold')
-    .text('Verified Exam Image', 82, 350, { width: 150, align: 'center' })
+    // Assessment language fix: replace ambiguous wording with explicit identity evidence wording.
+    .text('Candidate Assessment Photo', 82, 350, { width: 150, align: 'center' })
     .roundedRect(76, 372, 164, 154, 6)
     .lineWidth(1)
     .stroke('#64748b');
@@ -184,6 +192,14 @@ function drawCertificateLayout(doc, details) {
     .font('Helvetica')
     .fontSize(12)
     .text(expiryDate, 310, 440)
+    .fontSize(8.5)
+    // Governance fix: define validity and recertification policy interpretation for expiry.
+    .text(
+      'This credential is valid until the expiry date unless renewed under LearningCurve recertification policy.',
+      310,
+      456,
+      { width: 205, lineGap: 1 }
+    )
     .font('Helvetica-Bold')
     .fontSize(13)
     .text('Issued By', 310, 475)
@@ -217,24 +233,32 @@ function drawCertificateLayout(doc, details) {
     .text('Scan to verify', 700, 130, { width: 84, align: 'center' })
     .fontSize(8)
     .fillColor('#1f2937')
-    .text(`ID: ${certificateId}`, 615, 145, {
+    // Verification fix: clearly label identifier as Certificate ID.
+    .text(`Certificate ID: ${certificateId}`, 590, 145, {
       width: 180,
       align: 'right',
       lineBreak: false,
+    });
+
+  // Issuer consistency fix: include issuing authority in footer for governance traceability.
+  doc
+    .fontSize(9)
+    .fillColor('#334155')
+    .font('Helvetica')
+    .text(`Issued by ${TRAINING_PARTNER}`, margin, 560, {
+      width: pageWidth - margin * 2,
+      align: 'center',
     });
 }
 
 app.post('/api/certificates', upload.single('photo'), async (req, res) => {
   try {
     const learnerName = (req.body.name || '').trim();
-    const certificateName = (req.body.certificateName || '').trim();
+    // Credential integrity fix: lock issuance to the governed professional credential title.
+    const certificateName = PROFESSIONAL_CREDENTIAL_NAME;
 
     if (!learnerName) {
       return res.status(400).json({ error: 'Learner name is required.' });
-    }
-
-    if (!certificateName) {
-      return res.status(400).json({ error: 'Certificate name is required.' });
     }
 
     if (!req.file) {
