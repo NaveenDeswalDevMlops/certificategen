@@ -9,7 +9,7 @@
   <body>
     <main class="container">
       <h1>Certificate Generator</h1>
-      <p class="subtitle">Create a LearningCurve completion certificate with webcam photo.</p>
+      <p class="subtitle">Create a LearningCurve exam passed certificate with webcam exam image.</p>
 
       <form id="certificateForm">
         <label for="fullName">Full Name</label>
@@ -17,15 +17,15 @@
 
         <div class="camera-actions">
           <button type="button" id="openCameraBtn">Open Webcam</button>
-          <button type="button" id="captureBtn" disabled>Capture Passport Photo</button>
+          <button type="button" id="captureBtn" disabled>Capture Exam Image</button>
         </div>
 
         <div class="media-panel">
           <video id="video" autoplay playsinline></video>
           <canvas id="canvas" width="320" height="240" hidden></canvas>
           <div class="preview-box">
-            <p>Captured Photo Preview</p>
-            <img id="photoPreview" alt="Captured passport preview" />
+            <p>Exam Image Preview</p>
+            <img id="examImagePreview" alt="Captured exam image preview" />
           </div>
         </div>
 

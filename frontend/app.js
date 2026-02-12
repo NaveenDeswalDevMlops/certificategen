@@ -4,7 +4,7 @@ const openCameraBtn = document.getElementById('openCameraBtn');
 const captureBtn = document.getElementById('captureBtn');
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
-const photoPreview = document.getElementById('photoPreview');
+const examImagePreview = document.getElementById('examImagePreview');
 const statusText = document.getElementById('status');
 
 let mediaStream;
@@ -15,7 +15,7 @@ openCameraBtn.addEventListener('click', async () => {
     mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
     video.srcObject = mediaStream;
     captureBtn.disabled = false;
-    setStatus('Webcam is active. Capture a passport-style photo.', false);
+    setStatus('Webcam is active. Capture an exam image.', false);
   } catch (error) {
     setStatus('Unable to access webcam. Please check browser camera permissions.', true);
     console.error(error);
@@ -31,8 +31,8 @@ captureBtn.addEventListener('click', () => {
   canvas.toBlob(
     (blob) => {
       capturedBlob = blob;
-      photoPreview.src = URL.createObjectURL(blob);
-      setStatus('Photo captured. You can now generate the certificate.', false);
+      examImagePreview.src = URL.createObjectURL(blob);
+      setStatus('Exam image captured. You can now generate the certificate.', false);
     },
     'image/jpeg',
     0.95
@@ -48,13 +48,13 @@ form.addEventListener('submit', async (event) => {
   }
 
   if (!capturedBlob) {
-    setStatus('Please capture a photo before submitting.', true);
+    setStatus('Please capture an exam image before submitting.', true);
     return;
   }
 
   const payload = new FormData();
   payload.append('name', fullNameInput.value.trim());
-  payload.append('photo', capturedBlob, 'passport-photo.jpg');
+  payload.append('photo', capturedBlob, 'exam-image.jpg');
 
   try {
     setStatus('Generating PDF certificate...', false);
